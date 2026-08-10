@@ -102,6 +102,7 @@ class CommandHandler:
             # parametric & agent-authored changes
             "set_parameter",
             "move_component",
+            "import_step",
         }
     )
 
@@ -157,6 +158,7 @@ class CommandHandler:
                 "export_view_sheet": self.export_view_sheet,
                 "export": self.export,
                 "import_mesh": self.import_mesh,
+                "import_step": self.import_step,
                 "create_box_parametric": self.create_box_parametric,
                 "boolean_operation": self.boolean_operation,
                 "delete_all": self.delete_all,
@@ -1732,6 +1734,36 @@ class CommandHandler:
             return self.export_f3d(file_path)
 
         raise RuntimeError(f"Unknown format: {fmt}. Expected: stl, step, f3d")
+
+    def import_step(self, file_path: str, target_component: str = None):
+        """Import a STEP file's contents into the active design (RFY fork addition).
+
+        Imports into the root component (or a named component) via
+        ImportManager.importToTarget. Large assemblies can take minutes.
+        """
+        if not os.path.exists(file_path):
+            raise RuntimeError(f"STEP file not found: {file_path}")
+
+        app = self.app
+        design = self._design()
+        target = (
+            self._component_by_name(target_component)
+            if target_component else design.rootComponent
+        )
+        options = app.importManager.createSTEPImportOptions(file_path)
+        before = target.occurrences.count
+        try:
+            app.importManager.importToTarget(options, target)
+        except Exception:
+            # Some Fusion builds only allow STEP into a new document
+            doc = app.importManager.importToNewDocument(options)
+            return {"imported": True, "mode": "new_document",
+                    "document": doc.name if doc else None,
+                    "note": "importToTarget unsupported; opened as new document"}
+        after = target.occurrences.count
+        return {"imported": True, "mode": "into_target",
+                "target": target.name,
+                "new_occurrences": after - before}
 
     def import_mesh(
         self, file_path: str, component_name: str = None, units: str = "mm"

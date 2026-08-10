@@ -74,7 +74,7 @@ class EventBridge:
     # Called from socket (daemon) threads
     # ------------------------------------------------------------------
 
-    def submit(self, command: dict, timeout: float = 30.0) -> dict:
+    def submit(self, command: dict, timeout: float = 300.0) -> dict:
         """Queue *command* for main-thread execution; block until done."""
         cmd_type = command.get("type", "?")
 

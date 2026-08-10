@@ -101,7 +101,6 @@ class CommandHandler:
             "undo",
             # parametric & agent-authored changes
             "set_parameter",
-            "execute_code",
         }
     )
 
@@ -198,8 +197,6 @@ class CommandHandler:
                 "create_bend": self.create_bend,
                 "flat_pattern": self.flat_pattern,
                 "unfold": self.unfold,
-                # code execution
-                "execute_code": self.execute_code,
                 # CAM
                 "cam_list_setups": self.cam_list_setups,
                 "cam_list_operations": self.cam_list_operations,
@@ -2103,7 +2100,7 @@ class CommandHandler:
             p3 = adsk.core.Point3D.create(*point_three)
             inp.setByThreePoints(p1, p2, p3)
         elif method == "tangent":
-            raise RuntimeError("Tangent plane needs face selection—use execute_code")
+            raise RuntimeError("Tangent plane needs face selection — not supported in this fork")
         else:
             raise RuntimeError(f"Unknown method: {method}")
 
@@ -2922,69 +2919,16 @@ class CommandHandler:
     # ------------------------------------------------------------------
 
     def execute_code(self, code: str):
-        design = self._design()
-        type_before = design.designType
+        """Disabled in the RoboticsForYouth hardened fork.
 
-        ns = {
-            "adsk": adsk,
-            "app": self.app,
-            "ui": self.ui,
-            "design": design,
-            "component": self._root(),
-            "math": math,
-        }
-
-        buf = io.StringIO()
-
-        try:
-            tree = ast.parse(code)
-        except SyntaxError as exc:
-            raise RuntimeError(f"SyntaxError: {exc}")
-
-        last_expr_value = None
-        if tree.body and isinstance(tree.body[-1], ast.Expr):
-            last_node = tree.body.pop()
-            if tree.body:
-                with redirect_stdout(buf):
-                    exec(
-                        compile(
-                            ast.Module(body=tree.body, type_ignores=[]), "<mcp>", "exec"
-                        ),
-                        ns,
-                    )
-            expr_code = compile(ast.Expression(body=last_node.value), "<mcp>", "eval")
-            with redirect_stdout(buf):
-                last_expr_value = eval(expr_code, ns)
-        else:
-            with redirect_stdout(buf):
-                exec(compile(tree, "<mcp>", "exec"), ns)
-
-        output = buf.getvalue()
-        result = last_expr_value if last_expr_value is not None else output
-
-        # Warn if design type changed during execution
-        type_after = design.designType
-        design_type_warning = None
-        if type_before != type_after:
-            design_type_warning = (
-                f"WARNING: Design type changed from "
-                f"{'parametric' if type_before == 1 else 'direct'} to "
-                f"{'parametric' if type_after == 1 else 'direct'} "
-                f"during code execution. Use set_design_type to recover."
-            )
-            log.warning(design_type_warning)
-        if result is not None:
-            try:
-                import json as _json
-
-                _json.dumps(result)
-            except (TypeError, ValueError):
-                result = str(result)
-
-        response = {"executed": True, "result": result, "output": output}
-        if design_type_warning:
-            response["design_type_warning"] = design_type_warning
-        return response
+        Arbitrary code execution inside Fusion runs with full user privileges
+        over an unauthenticated localhost socket. The purpose-built CAD tools
+        cover all supported operations. See SECURITY-HARDENING.md.
+        """
+        raise RuntimeError(
+            "execute_code is disabled in the RoboticsForYouth hardened fork "
+            "(see SECURITY-HARDENING.md). Use the purpose-built CAD tools instead."
+        )
 
     # ------------------------------------------------------------------
     # Camera helper

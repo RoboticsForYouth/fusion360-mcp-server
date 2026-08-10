@@ -194,13 +194,6 @@ class TestMockSceneControl:
         assert "design_type" in result
 
 
-class TestMockExecuteCode:
-    def test_execute_code(self):
-        result = mock_command("execute_code", {"code": "1 + 1"})
-        assert result["code"] == "1 + 1"
-        assert "result" in result
-
-
 class TestMockNewGeometry:
     def test_sweep(self):
         result = mock_command(

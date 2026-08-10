@@ -327,23 +327,6 @@ TOOLS: list[dict] = [
             "properties": {},
         },
     },
-    # ── code execution ───────────────────────────────────────────────
-    {
-        "name": "execute_code",
-        "title": "Execute Code",
-        "description": (
-            "Run arbitrary Python in Fusion 360. "
-            "The last expression's value is returned (REPL-style). "
-            "Pre-defined names: app, ui, design, component, adsk, math."
-        ),
-        "inputSchema": {
-            "type": "object",
-            "required": ["code"],
-            "properties": {
-                "code": {"type": "string"},
-            },
-        },
-    },
     # ── additional geometry ───────────────────────────────────────────
     {
         "name": "sweep",

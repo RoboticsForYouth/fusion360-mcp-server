@@ -83,8 +83,6 @@ def test_expected_tools_present():
         # scene control
         "delete_all",
         "undo",
-        # code execution
-        "execute_code",
         # health
         "ping",
         # new geometry

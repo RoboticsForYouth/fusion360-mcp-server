@@ -55,7 +55,6 @@ _MUTATION_MOCKS: frozenset[str] = frozenset(
         "delete_all",
         "undo",
         "set_parameter",
-        "execute_code",
     }
 )
 
@@ -246,10 +245,6 @@ def _delete_all(_p: dict) -> dict:
 
 def _undo(_p: dict) -> dict:
     return {"undone": True, "design_type": 1}
-
-
-def _execute_code(p: dict) -> dict:
-    return {"executed": True, "code": p.get("code", ""), "result": "None", "output": ""}
 
 
 # ── design type safety ───────────────────────────────────────────────
@@ -939,7 +934,6 @@ _DISPATCH: dict[str, Any] = {
     "boolean_operation": _boolean_operation,
     "delete_all": _delete_all,
     "undo": _undo,
-    "execute_code": _execute_code,
     "sweep": _sweep,
     "loft": _loft,
     "create_polygon": _create_polygon,

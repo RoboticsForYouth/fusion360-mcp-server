@@ -101,6 +101,7 @@ class CommandHandler:
             "undo",
             # parametric & agent-authored changes
             "set_parameter",
+            "move_component",
         }
     )
 
@@ -170,6 +171,7 @@ class CommandHandler:
                 "create_construction_axis": self.create_construction_axis,
                 # assembly
                 "create_component": self.create_component,
+                "move_component": self.move_component,
                 "add_joint": self.add_joint,
                 "create_as_built_joint": self.create_as_built_joint,
                 "create_rigid_group": self.create_rigid_group,
@@ -2160,6 +2162,40 @@ class CommandHandler:
         occ = parent.occurrences.addNewComponent(adsk.core.Matrix3D.create())
         occ.component.name = name
         return {"created": True, "name": name}
+
+    def move_component(self, component_name: str, x: float = 0, y: float = 0, z: float = 0, absolute: bool = False):
+        """Translate a top-level component occurrence by (x, y, z) cm.
+
+        absolute=True sets the occurrence translation to (x, y, z) instead
+        of offsetting. Works for components containing mesh bodies (unlike
+        move_body, which is BRep-only). RFY fork addition.
+        """
+        root = self._root()
+        occ = None
+        for o in root.occurrences:
+            if o.component.name == component_name:
+                occ = o
+                break
+        if occ is None:
+            raise RuntimeError(f"Top-level component '{component_name}' not found")
+
+        t = occ.transform
+        if absolute:
+            t.translation = adsk.core.Vector3D.create(x, y, z)
+        else:
+            m = adsk.core.Matrix3D.create()
+            m.translation = adsk.core.Vector3D.create(x, y, z)
+            t.transformBy(m)
+        occ.transform = t
+        try:
+            design = self._design()
+            if design.snapshots.hasPendingSnapshot:
+                design.snapshots.add()
+        except Exception:
+            pass  # snapshot capture is best-effort (direct-modeling docs have none)
+        tr = occ.transform.translation
+        return {"moved": True, "component": component_name,
+                "translation": [tr.x, tr.y, tr.z], "absolute": absolute}
 
     def add_joint(
         self, component_one: str, component_two: str, joint_type: str = "rigid"

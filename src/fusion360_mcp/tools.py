@@ -509,6 +509,26 @@ TOOLS: list[dict] = [
         },
     },
     {
+        "name": "move_component",
+        "title": "Move Component",
+        "description": (
+            "Translate a top-level component occurrence by (x, y, z) in cm. "
+            "Set absolute=true to place it at (x, y, z) instead of offsetting. "
+            "Works for mesh-containing components (move_body is BRep-only)."
+        ),
+        "inputSchema": {
+            "type": "object",
+            "required": ["component_name"],
+            "properties": {
+                "component_name": {"type": "string"},
+                "x": {"type": "number"},
+                "y": {"type": "number"},
+                "z": {"type": "number"},
+                "absolute": {"type": "boolean"},
+            },
+        },
+    },
+    {
         "name": "add_joint",
         "title": "Add Joint",
         "description": "Add a joint between two components",

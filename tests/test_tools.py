@@ -95,6 +95,7 @@ def test_expected_tools_present():
         "circular_pattern",
         # assembly
         "create_component",
+        "move_component",
         "add_joint",
         "list_components",
         # export

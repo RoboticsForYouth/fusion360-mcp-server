@@ -55,6 +55,7 @@ _MUTATION_MOCKS: frozenset[str] = frozenset(
         "delete_all",
         "undo",
         "set_parameter",
+        "move_component",
     }
 )
 
@@ -321,6 +322,12 @@ def _circular_pattern(p: dict) -> dict:
 
 
 # ── assembly tools ────────────────────────────────────────────────────
+
+
+def _move_component(p: dict) -> dict:
+    return {"moved": True, "component": p.get("component_name", ""),
+            "translation": [p.get("x", 0), p.get("y", 0), p.get("z", 0)],
+            "absolute": bool(p.get("absolute", False))}
 
 
 def _create_component(p: dict) -> dict:
@@ -942,6 +949,7 @@ _DISPATCH: dict[str, Any] = {
     "rectangular_pattern": _rectangular_pattern,
     "circular_pattern": _circular_pattern,
     "create_component": _create_component,
+    "move_component": _move_component,
     "add_joint": _add_joint,
     "list_components": _list_components,
     "export_step": _export_step,

@@ -722,6 +722,22 @@ TOOLS: list[dict] = [
             },
         },
     },
+    {
+        "name": "import_step",
+        "title": "Import STEP",
+        "description": (
+            "Import a STEP file into the active design (or a new document when "
+            "the build requires it). Large assemblies can take minutes. RFY fork addition."
+        ),
+        "inputSchema": {
+            "type": "object",
+            "required": ["file_path"],
+            "properties": {
+                "file_path": {"type": "string"},
+                "target_component": {"type": "string"},
+            },
+        },
+    },
     # ── parameters ─────────────────────────────────────────────────────
     {
         "name": "get_parameters",

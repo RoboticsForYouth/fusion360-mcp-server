@@ -56,6 +56,7 @@ _MUTATION_MOCKS: frozenset[str] = frozenset(
         "undo",
         "set_parameter",
         "move_component",
+        "import_step",
     }
 )
 
@@ -322,6 +323,11 @@ def _circular_pattern(p: dict) -> dict:
 
 
 # ── assembly tools ────────────────────────────────────────────────────
+
+
+def _import_step(p: dict) -> dict:
+    return {"imported": True, "mode": "into_target",
+            "target": p.get("target_component") or "root", "new_occurrences": 1}
 
 
 def _move_component(p: dict) -> dict:
@@ -950,6 +956,7 @@ _DISPATCH: dict[str, Any] = {
     "circular_pattern": _circular_pattern,
     "create_component": _create_component,
     "move_component": _move_component,
+    "import_step": _import_step,
     "add_joint": _add_joint,
     "list_components": _list_components,
     "export_step": _export_step,

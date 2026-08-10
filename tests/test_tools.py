@@ -96,6 +96,7 @@ def test_expected_tools_present():
         # assembly
         "create_component",
         "move_component",
+        "import_step",
         "add_joint",
         "list_components",
         # export

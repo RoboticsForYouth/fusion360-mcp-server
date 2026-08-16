@@ -38,3 +38,9 @@ git fetch upstream && git merge upstream/main
 grep -rn "execute_code" src/ addon/ tests/   # expect only this file + the disabled stub
 pytest -q
 ```
+
+## Team skill
+
+`claude-skills/az-fusion-design/SKILL.md` encodes the team's design conventions,
+part-library locations, and live-tested tool quirks. Claude Code users: copy it to
+`~/.claude/skills/az-fusion-design/SKILL.md` (or symlink) so every session can load it.

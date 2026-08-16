@@ -2332,19 +2332,17 @@ class CommandHandler:
 
         measure = self.app.measureManager
         result = measure.measureMinimumDistance(e1, e2)
-        return {
-            "distance": result.value,
-            "point_one": [
-                result.pointOnEntityOne.x,
-                result.pointOnEntityOne.y,
-                result.pointOnEntityOne.z,
-            ],
-            "point_two": [
-                result.pointOnEntityTwo.x,
-                result.pointOnEntityTwo.y,
-                result.pointOnEntityTwo.z,
-            ],
-        }
+        out = {"distance": result.value}
+        # Current Fusion API renamed pointOnEntityOne/Two -> positionOne/Two;
+        # tolerate both and degrade gracefully (RFY fork fix).
+        for key, attrs in (("point_one", ("positionOne", "pointOnEntityOne")),
+                           ("point_two", ("positionTwo", "pointOnEntityTwo"))):
+            for attr in attrs:
+                pt = getattr(result, attr, None)
+                if pt is not None:
+                    out[key] = [pt.x, pt.y, pt.z]
+                    break
+        return out
 
     def measure_angle(self, entity_one: str, entity_two: str):
         root = self._root()
